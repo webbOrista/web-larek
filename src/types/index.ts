@@ -1,117 +1,116 @@
 
-import { Api } from "../components/base/api";
+// import {API_URL, CDN_URL} from "utils/constants";
 
-
-// Перечисление, ограничивающее свойство "категория" заданным набором значений
-
-enum EProductCathegory {
-	soft = 'софт-скилл',
-	hard = 'хард-скилл',
-	another = 'другое',
-	btn = 'кнопка',
-	additional = 'дополнительное',
-}
-
-// Перечисление, ограничивающее выбор способа оплаты заданным набором значений
-
-enum EPaymentMethod {
-	onDelivery = 'При получении',
-	online = 'Онлайн',
-}
-
+import { Component } from "../components/base/component";
+import {ensureElement} from "../utils/utils";
+import {IEvents} from "../components/base/events";
 
 // Интерфейс, описывающий объект товара, возвращаемый сервером
 
 export interface IProduct{
 	id: string;
 	title: string;
-	price: number;
-	cathegory: EProductCathegory;
+	price: number|null;
+	category: string;
 	image: string;
-	description?: string;
+	description: string;
+	inCart?:boolean;
 }
 
 
 // Интерфейс, описывающий объект заказа, передаваемый на сервер
 
 export interface IOrder {
-	payment: EPaymentMethod;
+	payment: string;
 	email: string;
 	phone: string;
 	address: string;
 	total: number;
-	items: IProduct[];
+	items: string[];
 }
 
 
-// Необходим для подключения к логике в index.ts
-interface ICustomApi extends Api  {
-	getProductList: () => Promise<IProduct[]>;
-    getProductItem: (id: string) => Promise<IProduct>;
-	orderProducts: (order: IOrder) => Promise<IOrderResult>;
-}
 
-// Типизация ответа, который мы принимаем от сервера при завершении заказа (основан на коллекции Postman)
-interface IOrderResult  {
+
+// Типизация ответа от сервера при завершении заказа
+export interface IOrderResult  {
 	id: string;
 	total: number;
 }
 
-// Необходим для подключения модели к основной бизнес-логике, содержащейся в index.ts
-interface IModel  {
+
+export interface IModelData  {
 	catalog: IProduct[];
-    basket: string[];
-    order: IOrder | null;
+    shoppingCart: string[];
+	preview:string|null;
 }
 
 
-// Типизирует карточку, с его помощью будем создавать экземпляры карточек товаров
-interface IProductCardView  {
+export interface IProductCardView  {
 	title: string;
 	price: number;
-	cathegory: EProductCathegory;
+	category: string;
 	image: string;
-	description?: string;
-}
-
-// Используется при подключении к index.ts
-interface IPage  {
-	counter: number;
-    catalog: HTMLElement[];
-    locked: boolean;
+	description: string;
+	button?: HTMLButtonElement;
 }
 
 // Необходим для типизации базового компонента (передаем данный тип и превращаем компонент в корзину)
-interface IShoppingCartView  {
+export interface IShoppingCartView  {
 	items: HTMLElement[];
     total: number;
 }
 
 // Позволяет типизировать состояние компонента Form, задает более четкую структуру состояния, чем в родительском компоненте Component
 
-interface IFormState  {
+export interface IFormState  {
 	valid: boolean;
     errors: string[];
 }
 
 // Необходим для типизации полей формы ввода электронной почты и номера телефона 
-interface IUserContactsForm  {
+export interface IUserContactsForm  {
 	email: string;
 	phone: string;
 }
 
 // Необходим для типизации полей формы ввода выбора способа оплаты и адреса доставки
-interface IUserDataForm {
-	payment: EPaymentMethod;
+export interface IUserDataForm {
+	payment: string;
 	address: string;
 }
 
 // Отображает модальное окно, выводит внутри окна переданный контент
-interface IPopup  {
+export interface IPopup  {
 	content: HTMLElement;
 }
 
 // Позволяет типизировать экземпляр  класса Success
-interface ISuccess  {
+export interface ISuccess  {
 	total: number;
 }
+
+export type FormErrors = Partial<Record<keyof IOrder, string>>;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
