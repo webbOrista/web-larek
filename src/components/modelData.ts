@@ -9,9 +9,6 @@ import {
 
 import { IEvents } from './base/events';
 
-export interface catalogChangedEvent {
-	products: IProduct[];
-}
 
 // Базовая модель
 export abstract class Model<T> {
@@ -25,15 +22,15 @@ export abstract class Model<T> {
 	}
 }
 
-// Главная модель данных, хранит массив товаров каталога, массив товаров корзины, данные заказа
+// Главная модель данных
 
 export class ModelData extends Model<IModelData> {
-	catalog: IProduct[]; //- массив товаров каталога
-	shoppingCart: IProduct[] = []; //- массив товаров в корзине
-	preview: string | null; // здесь хранится  айдишник того товара, который хотим показать в модалке
+	catalog: IProduct[];
+	shoppingCart: IProduct[] = [];
+	preview: string | null; // в поле хранится ID товара, отображаемого в модальном окне
 	formErrors: FormErrors = {};
-	order: IOrder = {
-		payment: 'online', // значение по умолчанию, чтобы не лагала валидация
+	order: IOrder = { // в поле хранятся данные сформированного заказа
+		payment: '',
 		address: '',
 		email: '',
 		phone: '',
@@ -43,47 +40,49 @@ export class ModelData extends Model<IModelData> {
 
 	setCatalog(productCards: IProduct[]) {
 		this.catalog = productCards;
-		this.emitChanges('catalog:changed', { catalog: this.catalog });
+		this.emitChanges('catalog:change', { catalog: this.catalog });
 	}
 	
 
-	// Получение одной карточки для отображения в модалке
+	// Получение данных одной карточки для ее отображения в модальном окне
 	setPreview(item: IProduct) {
 		this.preview = item.id;
-		this.emitChanges('preview:changed', item);
+		this.emitChanges('preview:change', item);
 	} 
 
 	addToShoppingCart(item: IProduct) {
 		this.shoppingCart.push(item);
+		this.emitChanges('shoppingCart:change', item);
 	}
 
 	removeFromShoppingCart(item: IProduct) {
 		const index = this.shoppingCart.indexOf(item);
 		this.shoppingCart.splice(index, 1);
+		this.emitChanges('shoppingCart:change', item);
+		
 	}
 
 	clearShoppingCart() {
-		this.shoppingCart = [];
-			}
 
-	// Разместить в заказе товары из корзины
-	placeToOrder(): void {
+		this.shoppingCart = [];
+		}
+		
+
+	// Добавить в заказ товары из корзины и их общую стоимость
+	placeToOrder(){
 		this.order.items = this.shoppingCart.map((item) => item.id);
+		this.order.total= this.getTotal();
 	}
 
-	resetOrder(): IOrder {
-		return {
-			payment: 'online',
+	clearOrder() {
+		this.order = {
+			payment: '',
 			address: '',
 			email: '',
 			phone: '',
 			items: [],
 			total: 0,
 		};
-	}
-
-	clearOrder(): void {
-		this.order = this.resetOrder();
 	}
 
 	getTotal() {
@@ -93,7 +92,6 @@ export class ModelData extends Model<IModelData> {
 		});
 
 		return summ;
-		//получить итоговую сумму заказа
 	}
 
 	countShoppingCartItems() {
@@ -107,10 +105,6 @@ export class ModelData extends Model<IModelData> {
 		}
 	}
 
-	clearUserData() {
-		this.order.address = '';
-		this.order.payment = '';
-	}
 
 	validateUserData(): boolean {
 		const errors: typeof this.formErrors = {};
@@ -121,8 +115,8 @@ export class ModelData extends Model<IModelData> {
 			errors.address = 'Необходимо указать адрес доставки';
 		}
 		this.formErrors = errors;
-		this.events.emit('formErrors:change', this.formErrors);
-		return Object.keys(errors).length === 0; // - если длина массива равна нулю (ошибок нет), то выражение будет истинным и функция вернёт true
+		this.events.emit('UserDataFormErrors:change', this.formErrors);
+		return Object.keys(errors).length === 0; //Если длина массива равна нулю (ошибок нет), то выражение будет истинным и функция вернёт true
 	}
 
 	setUserContactsField(field: keyof IUserContactsForm, value: string) {
@@ -142,12 +136,8 @@ export class ModelData extends Model<IModelData> {
 			errors.phone = 'Необходимо указать телефон';
 		}
 		this.formErrors = errors;
-		this.events.emit('formErrors:change', this.formErrors);
+		this.events.emit('UserContactsFormErrors:change', this.formErrors);
 		return Object.keys(errors).length === 0;
 	}
 
-	clearUserContacts() {
-		this.order.email = '';
-		this.order.phone = '';
-	}
 }

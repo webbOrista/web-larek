@@ -1,9 +1,8 @@
 //Слой отображения
 
 import { IProductCardView } from '../types';
-import { cloneTemplate, ensureElement } from '../utils/utils';
+import {  ensureElement } from '../utils/utils';
 import { Component } from './base/component';
-import { IEvents } from './base/events';
 
 interface ICardActions {
 	onClick: (event: MouseEvent) => void;
@@ -11,12 +10,13 @@ interface ICardActions {
 
 // Отрисовывает карточку, работает с разметкой
 export class ProductCard extends Component<IProductCardView> {
-	protected _image: HTMLImageElement;
 	protected _title: HTMLElement;
+	protected _image: HTMLImageElement|null;
 	protected _category: HTMLElement;
 	protected _price: HTMLElement;
 	protected _description: HTMLElement;
-	protected _button?: HTMLButtonElement;
+	protected _button: HTMLButtonElement;
+	protected _cartItemIndex?: HTMLElement;
 
 	Category: { [key: string]: string } = {
 		'софт-скил': 'card__category_soft',
@@ -27,24 +27,18 @@ export class ProductCard extends Component<IProductCardView> {
 	};
 
 	constructor(
-		protected blockName: string,
 		container: HTMLElement,
 		actions: ICardActions
 	) {
-		// В конструктор принимает Dom-элемент темплейта и экземпляр эмиттера
 		super(container);
-		this._title = ensureElement<HTMLElement>(`.${blockName}__title`, container);
-		this._image = ensureElement<HTMLImageElement>(
-			`.${blockName}__image`,
-			container
-		);
-		this._button = container.querySelector(`.${blockName}__button`);
-		this._description = container.querySelector(`.${blockName}__description`);
-		this._price = container.querySelector(`.${blockName}__price`);
-		this._category = ensureElement<HTMLElement>(
-			`.${blockName}__category`,
-			container
-		);
+		this._title = ensureElement<HTMLElement>('.card__title', container);
+		this._image = container.querySelector('.card__image');
+		this._button = container.querySelector('.card__button');
+		this._description = container.querySelector('.card__text');
+		this._price = container.querySelector('.card__price');
+		this._category = container.querySelector('.card__category');
+		this._cartItemIndex = container.querySelector('.basket__item-index');
+		
 
 		if (actions?.onClick) {
 			if (this._button) {
@@ -84,6 +78,10 @@ export class ProductCard extends Component<IProductCardView> {
 		this._category.classList.add(this.Category[value]);
 	}
 
+	get category(): string {
+		return this._category.textContent || '';
+	}
+
 	set price(value: number | null) {
 		this.setText(
 			this._price,
@@ -112,5 +110,13 @@ export class ProductCard extends Component<IProductCardView> {
 		} else {
 			this.button = 'В корзину';
 		}
+	}
+
+	set cartItemIndex(value: string) {
+		this._cartItemIndex.textContent = value;
+	}
+
+	get cartItemIndex(): string {
+		return this._cartItemIndex.textContent || '';
 	}
 }

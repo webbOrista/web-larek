@@ -1,9 +1,13 @@
-import { IPopup } from "../types";
 import { ensureElement } from "../utils/utils";
 import { Component } from "./base/component";
 import { IEvents } from "./base/events";
 
-// Позволяет создавать типизированные экземпляры модального окна
+
+export interface IPopup  {
+	content: HTMLElement;
+}
+
+// Отображает модальное окно, выводит внутри окна переданный контент
 export class Popup extends Component<IPopup>{
 	protected _closeButton: HTMLButtonElement;
     protected _content: HTMLElement;
@@ -14,22 +18,31 @@ export class Popup extends Component<IPopup>{
         this._content = ensureElement<HTMLElement>('.modal__content', container);
 
         this._closeButton.addEventListener('click', this.close.bind(this));
-        this.container.addEventListener('click', this.close.bind(this));
-        this._content.addEventListener('click', (event) => event.stopPropagation());
+        this.container.addEventListener('mousedown', this.close.bind(this));
+        this._content.addEventListener('mousedown', (event) => event.stopPropagation());
 	}
     set content(value: HTMLElement) {
         this._content.replaceChildren(value);
     }
 
     open() {
+        
+        document.addEventListener("keydown", this.handleESC.bind(this))
         this.container.classList.add('modal_active');
         this.events.emit('modal:open');
     }
 
     close() {
+        document.removeEventListener("keydown", this.handleESC.bind(this));
         this.container.classList.remove('modal_active');
         this.content = null;
         this.events.emit('modal:close');
+    }
+
+    handleESC(evt:KeyboardEvent){
+        if(evt.key === "Escape"){
+            this.close();
+        };
     }
 
     render(data: IPopup): HTMLElement {
