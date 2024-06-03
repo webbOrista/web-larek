@@ -1,6 +1,6 @@
 //Слой отображения
 
-import { IProductCardView } from '../types';
+import { IProduct } from '../types';
 import {  ensureElement } from '../utils/utils';
 import { Component } from './base/component';
 
@@ -9,7 +9,7 @@ interface ICardActions {
 }
 
 // Отрисовывает карточку, работает с разметкой
-export class ProductCard extends Component<IProductCardView> {
+export class ProductCard extends Component<IProduct> {
 	protected _title: HTMLElement;
 	protected _image: HTMLImageElement|null;
 	protected _category: HTMLElement;
@@ -61,10 +61,6 @@ export class ProductCard extends Component<IProductCardView> {
 		this.setText(this._title, value);
 	}
 
-	get title(): string {
-		return this._title.textContent || '';
-	}
-
 	set image(value: string) {
 		this.setImage(this._image, value, this.title);
 	}
@@ -78,10 +74,6 @@ export class ProductCard extends Component<IProductCardView> {
 		this._category.classList.add(this.Category[value]);
 	}
 
-	get category(): string {
-		return this._category.textContent || '';
-	}
-
 	set price(value: number | null) {
 		this.setText(
 			this._price,
@@ -92,10 +84,6 @@ export class ProductCard extends Component<IProductCardView> {
 		}
 	}
 
-	get price(): number {
-		return Number(this._price.textContent) || 0;
-	}
-
 	set button(value: string) {
 		this.setText(this._button, value);
 	}
@@ -104,19 +92,15 @@ export class ProductCard extends Component<IProductCardView> {
 		this.changeButtonDescription(value);
 	}
 
+	set cartItemIndex(value: string) {
+		this._cartItemIndex.textContent = value;
+	}
+
 	changeButtonDescription(inCart: boolean) {
 		if (inCart) {
 			this.button = 'Удалить из корзины';
 		} else {
 			this.button = 'В корзину';
 		}
-	}
-
-	set cartItemIndex(value: string) {
-		this._cartItemIndex.textContent = value;
-	}
-
-	get cartItemIndex(): string {
-		return this._cartItemIndex.textContent || '';
 	}
 }

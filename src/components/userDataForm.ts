@@ -34,13 +34,4 @@ export class UserDataForm extends Form<IUserDataForm> {
 	set valid(value: boolean) {
 		this._submit.disabled = !value;
 	}
-
-
-	clearUserData(){
-        this._payment.forEach((item) => {this.toggleClass(item, 'button_alt-active', false)});
-        this.address = '';
-    }
-
-
-
 }

@@ -9,27 +9,25 @@ import {
 
 import { IEvents } from './base/events';
 
-
 // Базовая модель
 export abstract class Model<T> {
 	constructor(data: Partial<T>, protected events: IEvents) {
 		Object.assign(this, data);
 	}
 
-	// Сообщить всем что модель поменялась
 	emitChanges(event: string, payload?: object) {
 		this.events.emit(event, payload ?? {});
 	}
 }
 
 // Главная модель данных
-
 export class ModelData extends Model<IModelData> {
 	catalog: IProduct[];
 	shoppingCart: IProduct[] = [];
 	preview: string | null; // в поле хранится ID товара, отображаемого в модальном окне
 	formErrors: FormErrors = {};
-	order: IOrder = { // в поле хранятся данные сформированного заказа
+	order: IOrder = {
+		// в поле хранятся данные сформированного заказа
 		payment: '',
 		address: '',
 		email: '',
@@ -42,13 +40,12 @@ export class ModelData extends Model<IModelData> {
 		this.catalog = productCards;
 		this.emitChanges('catalog:change', { catalog: this.catalog });
 	}
-	
 
 	// Получение данных одной карточки для ее отображения в модальном окне
 	setPreview(item: IProduct) {
 		this.preview = item.id;
 		this.emitChanges('preview:change', item);
-	} 
+	}
 
 	addToShoppingCart(item: IProduct) {
 		this.shoppingCart.push(item);
@@ -59,21 +56,38 @@ export class ModelData extends Model<IModelData> {
 		const index = this.shoppingCart.indexOf(item);
 		this.shoppingCart.splice(index, 1);
 		this.emitChanges('shoppingCart:change', item);
-		
 	}
 
-	clearShoppingCart() {
+	// Подсчет количества товаров в корзине для вывода значения у иконки корзины на главной странице
+	countShoppingCartItems() {
+		return this.shoppingCart.length;
+	}
 
+	// Подсчет общей стоимости товаров в корзине
+	getTotal() {
+		let summ = 0;
+		this.shoppingCart.forEach((item) => {
+			summ = summ + item.price;
+		});
+
+		return summ;
+	}
+
+	// Удаление всех товаров из корзины после завершения заказа
+	clearShoppingCart() {
 		this.shoppingCart = [];
-		}
-		
+		this.catalog.forEach((item) => {
+			item.inCart = false;
+		});
+	}
 
 	// Добавить в заказ товары из корзины и их общую стоимость
-	placeToOrder(){
+	placeToOrder() {
 		this.order.items = this.shoppingCart.map((item) => item.id);
-		this.order.total= this.getTotal();
+		this.order.total = this.getTotal();
 	}
 
+	// Очистка полей заказа после его завершения
 	clearOrder() {
 		this.order = {
 			payment: '',
@@ -85,26 +99,12 @@ export class ModelData extends Model<IModelData> {
 		};
 	}
 
-	getTotal() {
-		let summ = 0;
-		this.shoppingCart.forEach((item) => {
-			summ = summ + item.price;
-		});
-
-		return summ;
-	}
-
-	countShoppingCartItems() {
-		return this.shoppingCart.length;
-	}
-
 	setUserDataField(field: keyof IUserDataForm, value: string) {
 		this.order[field] = value;
 		if (this.validateUserData()) {
 			return;
 		}
 	}
-
 
 	validateUserData(): boolean {
 		const errors: typeof this.formErrors = {};
@@ -116,7 +116,8 @@ export class ModelData extends Model<IModelData> {
 		}
 		this.formErrors = errors;
 		this.events.emit('UserDataFormErrors:change', this.formErrors);
-		return Object.keys(errors).length === 0; //Если длина массива равна нулю (ошибок нет), то выражение будет истинным и функция вернёт true
+		return Object.keys(errors).length === 0; // Если длина массива равна нулю (ошибок нет),
+		// то выражение будет истинным, функция вернёт true
 	}
 
 	setUserContactsField(field: keyof IUserContactsForm, value: string) {
@@ -139,5 +140,4 @@ export class ModelData extends Model<IModelData> {
 		this.events.emit('UserContactsFormErrors:change', this.formErrors);
 		return Object.keys(errors).length === 0;
 	}
-
 }

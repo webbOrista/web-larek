@@ -24,7 +24,6 @@ export class CustomAPI extends Api implements ICustomApi {
             }))
         );
     }
-
     
     getProductItem(id: string): Promise<IProduct> {
         return this.get(`/product/${id}`).then(

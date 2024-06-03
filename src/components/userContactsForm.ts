@@ -15,9 +15,4 @@ export class UserContactsForm extends Form<IUserContactsForm> {
 	set phone(value: string) {
 		(this.container.elements.namedItem('phone') as HTMLInputElement).value = value;
 	}
-	
-	clearUserContacts() {
-		this.email = ''
-    	this.phone = ''
-	}
 }

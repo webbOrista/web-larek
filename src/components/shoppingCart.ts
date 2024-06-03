@@ -1,4 +1,4 @@
-import { IProductCardView } from "../types";
+import { IProduct } from "../types";
 import { createElement, ensureElement } from "../utils/utils";
 import { Component } from "./base/component";
 import { EventEmitter } from "./base/events";
@@ -9,8 +9,6 @@ export interface IShoppingCartView  {
     total: number;
     buttonToggler: string[];
 }
-
-
 
 // Отрисовывает корзину с ее содержимым
 export class ShoppingCart extends Component<IShoppingCartView> {
@@ -49,7 +47,6 @@ export class ShoppingCart extends Component<IShoppingCartView> {
             this.setDisabled(this._button, false);
         }
     }
-
 
 	set total(summ: number) {
 		this.setText(this._total, `${summ.toString()} синапсов`);

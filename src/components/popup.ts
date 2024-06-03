@@ -2,7 +2,6 @@ import { ensureElement } from "../utils/utils";
 import { Component } from "./base/component";
 import { IEvents } from "./base/events";
 
-
 export interface IPopup  {
 	content: HTMLElement;
 }
@@ -26,7 +25,6 @@ export class Popup extends Component<IPopup>{
     }
 
     open() {
-        
         document.addEventListener("keydown", this.handleESC.bind(this))
         this.container.classList.add('modal_active');
         this.events.emit('modal:open');

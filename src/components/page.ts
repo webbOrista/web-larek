@@ -24,10 +24,7 @@ export class Page extends Component<IPage> {
         this._catalog = ensureElement<HTMLElement>('.gallery');
         this._wrapper = ensureElement<HTMLElement>('.page__wrapper');
         this._shoppingCartIcon = ensureElement<HTMLElement>('.header__basket');
-
-        this._shoppingCartIcon.addEventListener('click', () => {
-            this.events.emit('shoppingCart:select');
-        });
+        this._shoppingCartIcon.addEventListener('click', () => {this.events.emit('shoppingCart:select');});
     }
 
     set counter(value: number) {

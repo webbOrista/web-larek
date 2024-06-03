@@ -6,6 +6,8 @@ export interface IProduct {
 	category: string;
 	image: string;
 	description: string;
+	inCart?: boolean;
+	cartItemIndex?: number;
 }
 
 // Интерфейс, описывающий объект заказа, передаваемый на сервер
@@ -29,23 +31,18 @@ export interface IModelData {
 	preview: string | null;
 }
 
-export interface catalogChangedEvent {
+export interface IcatalogChange {
 	products: IProduct[];
-}
-
-export interface IProductCardView extends IProduct {
-	inCart: boolean;
-	cartItemIndex?: number;
-}
-
-export interface IUserContactsForm {
-	email: string;
-	phone: string;
 }
 
 export interface IUserDataForm {
 	payment: string;
 	address: string;
+}
+
+export interface IUserContactsForm {
+	email: string;
+	phone: string;
 }
 
 export type FormErrors = Partial<Record<keyof IOrder, string>>;
