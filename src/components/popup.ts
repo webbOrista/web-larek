@@ -26,13 +26,13 @@ export class Popup extends Component<IPopup>{
 
     open() {
         document.addEventListener("keydown", this.handleESC.bind(this))
-        this.container.classList.add('modal_active');
+        this.toggleClass(this.container,'modal_active', true)
         this.events.emit('modal:open');
     }
 
     close() {
         document.removeEventListener("keydown", this.handleESC.bind(this));
-        this.container.classList.remove('modal_active');
+        this.toggleClass(this.container,'modal_active')
         this.content = null;
         this.events.emit('modal:close');
     }

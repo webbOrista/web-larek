@@ -55,6 +55,7 @@ export class ModelData extends Model<IModelData> {
 	removeFromShoppingCart(item: IProduct) {
 		const index = this.shoppingCart.indexOf(item);
 		this.shoppingCart.splice(index, 1);
+		item.inCart = false;
 		this.emitChanges('shoppingCart:change', item);
 	}
 
@@ -80,6 +81,8 @@ export class ModelData extends Model<IModelData> {
 			item.inCart = false;
 		});
 	}
+
+
 
 	// Добавить в заказ товары из корзины и их общую стоимость
 	placeToOrder() {

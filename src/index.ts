@@ -24,6 +24,8 @@ const api = new CustomAPI(CDN_URL, API_URL);
 const appData = new ModelData({}, events);
 const page = new Page(document.body, events);
 
+events.onAll((events)=>{console.log(events.eventName)});
+
 // КАРТОЧКИ
 
 const cardTemlate = ensureElement<HTMLTemplateElement>('#card-catalog');
@@ -94,7 +96,6 @@ const shoppingCart = new ShoppingCart(cloneTemplate(shoppingCartTemplate),events
 events.on('productCard:add', (item: IProduct) => {
 	item.inCart = true;
 	appData.addToShoppingCart(item);
-	page.counter = appData.countShoppingCartItems();
 	modal.close();
 });
 
@@ -102,14 +103,13 @@ events.on('productCard:add', (item: IProduct) => {
 events.on('productCard:remove', (item: IProduct) => {
 	item.inCart = false;
 	appData.removeFromShoppingCart(item);
-	page.counter = appData.countShoppingCartItems();
-	shoppingCart.total = appData.getTotal();
 	modal.close();
 });
 
 // Отображение модального окна корзины
 events.on('shoppingCart:select', () => {
-	shoppingCart.buttonToggler = appData.shoppingCart.map((item) => item.id); // Активируем кнопку "Оформить" если в корзину добавлен товар
+	// Активируем кнопку "Оформить" если в корзину добавлен товар
+	shoppingCart.buttonToggler = appData.shoppingCart.map((item) => item.id); 
 	modal.render({
 		content: shoppingCart.render({
 			total: appData.getTotal(),
@@ -118,12 +118,18 @@ events.on('shoppingCart:select', () => {
 	page.locked = true;
 });
 
+
+
 // Изменение наполнения корзины
 events.on('shoppingCart:change', () => {
+	page.counter = appData.countShoppingCartItems();
+	shoppingCart.total = appData.getTotal();
 	shoppingCart.items = appData.shoppingCart.map((item, cartItemIndex) => {
 		const card = new ProductCard(cloneTemplate(cardInShoppingCartTemplate), {
 			onClick: () => {
 				events.emit('cardInShoppingCart:remove', item);
+				// Проверяем, не пора ли блокировать кнопку, если в корзине не осталось товаров
+				shoppingCart.buttonToggler = appData.shoppingCart.map((item) => item.id)
 			},
 		});
 		return card.render({
@@ -136,10 +142,7 @@ events.on('shoppingCart:change', () => {
 
 // Событие удаления карточки товара из корзины без закрытия модального окна корзины
 events.on('cardInShoppingCart:remove', (item: IProduct) => {
-	item.inCart = false;
 	appData.removeFromShoppingCart(item);
-	page.counter = appData.countShoppingCartItems();
-	shoppingCart.total = appData.getTotal();
 });
 
 // ОФОРМЛЕНИЕ ЗАКАЗА
@@ -211,6 +214,7 @@ events.on(
 
 // Завершение заказа, отправка сформированного заказа на сервер
 const successTemplate = ensureElement<HTMLTemplateElement>('#success');
+const success = new Success(cloneTemplate(successTemplate),{onClick:()=> modal.close()})
 
 events.on('contacts:submit', () => {
 	appData.placeToOrder();
@@ -218,12 +222,8 @@ events.on('contacts:submit', () => {
 		.then((res) => {
 			appData.clearShoppingCart(),
 			shoppingCart.resetCartView(),
-			(page.counter = 0);
-			const success = new Success(cloneTemplate(successTemplate), {
-				onClick() {
-					modal.close(), appData.clearOrder();
-				},
-			});
+			appData.clearOrder(),
+			page.counter = 0,
 			modal.render({
 				content: success.render({
 				total: res.total,

@@ -10,6 +10,7 @@ interface ICardActions {
 
 // Отрисовывает карточку, работает с разметкой
 export class ProductCard extends Component<IProduct> {
+	protected _id: string;
 	protected _title: HTMLElement;
 	protected _image: HTMLImageElement|null;
 	protected _category: HTMLElement;
@@ -49,12 +50,12 @@ export class ProductCard extends Component<IProduct> {
 		}
 	}
 
-	set id(value: string) {
-		this.container.dataset.id = value;
+	set id(value: string){
+		this._id = value;
 	}
 
 	get id(): string {
-		return this.container.dataset.id || '';
+		return this._id || '';
 	}
 
 	set title(value: string) {
@@ -71,7 +72,7 @@ export class ProductCard extends Component<IProduct> {
 
 	set category(value: string) {
 		this.setText(this._category, value);
-		this._category.classList.add(this.Category[value]);
+		this.toggleClass(this._category, this.Category[value], true);
 	}
 
 	set price(value: number | null) {
