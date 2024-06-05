@@ -1,6 +1,5 @@
 import {
 	IModelData,
-	IOrder,
 	FormErrors,
 	IUserDataForm,
 	IUserContactsForm,
@@ -24,16 +23,15 @@ export abstract class Model<T> {
 export class ModelData extends Model<IModelData> {
 	catalog: IProduct[];
 	shoppingCart: IProduct[] = [];
-	preview: string | null; // в поле хранится ID товара, отображаемого в модальном окне
+	// В поле сохраняется ID товара, отображаемого в модальном окне
+	preview: string | null; 
 	formErrors: FormErrors = {};
-	order: IOrder = {
-		// в поле хранятся данные сформированного заказа
+	// В поле сохраняются данные, введенные в формы при оформлении заказа
+	order: IUserDataForm & IUserContactsForm = {
 		payment: '',
 		address: '',
 		email: '',
-		phone: '',
-		total: 0,
-		items: [],
+		phone: ''
 	};
 
 	setCatalog(productCards: IProduct[]) {
@@ -82,23 +80,13 @@ export class ModelData extends Model<IModelData> {
 		});
 	}
 
-
-
-	// Добавить в заказ товары из корзины и их общую стоимость
-	placeToOrder() {
-		this.order.items = this.shoppingCart.map((item) => item.id);
-		this.order.total = this.getTotal();
-	}
-
-	// Очистка полей заказа после его завершения
+	// Очистка полей форм после завершения заказа
 	clearOrder() {
 		this.order = {
 			payment: '',
 			address: '',
 			email: '',
 			phone: '',
-			items: [],
-			total: 0,
 		};
 	}
 
@@ -125,7 +113,6 @@ export class ModelData extends Model<IModelData> {
 
 	setUserContactsField(field: keyof IUserContactsForm, value: string) {
 		this.order[field] = value;
-
 		if (this.validateUserContacts()) {
 			return;
 		}

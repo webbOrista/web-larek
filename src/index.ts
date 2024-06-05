@@ -24,8 +24,6 @@ const api = new CustomAPI(CDN_URL, API_URL);
 const appData = new ModelData({}, events);
 const page = new Page(document.body, events);
 
-events.onAll((events)=>{console.log(events.eventName)});
-
 // КАРТОЧКИ
 
 const cardTemlate = ensureElement<HTMLTemplateElement>('#card-catalog');
@@ -117,8 +115,6 @@ events.on('shoppingCart:select', () => {
 	});
 	page.locked = true;
 });
-
-
 
 // Изменение наполнения корзины
 events.on('shoppingCart:change', () => {
@@ -217,8 +213,7 @@ const successTemplate = ensureElement<HTMLTemplateElement>('#success');
 const success = new Success(cloneTemplate(successTemplate),{onClick:()=> modal.close()})
 
 events.on('contacts:submit', () => {
-	appData.placeToOrder();
-	api.orderProducts(appData.order)
+	api.orderProducts({...appData.order, items: appData.shoppingCart.map((item) => item.id), total: appData.getTotal()})
 		.then((res) => {
 			appData.clearShoppingCart(),
 			shoppingCart.resetCartView(),
