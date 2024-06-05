@@ -160,7 +160,7 @@ yarn build
 
 - **catalog:** `IProduct[]` - массив товаров каталога
 - **shoppingCart:** `IProduct[]` - массив товаров в корзине
-- **order:** `IOrder` - текущий заказ
+- **order:** `IUserDataForm & IUserContactsForm` - данные покупателя, введенные в формы заказа
 - **preview:** `string | null` - ID выведенного в модальное окно товара
 - **formErrors:** `FormErrors` - объект ошибок валидации
 
@@ -173,8 +173,7 @@ yarn build
 - **countShoppingCartItems()** - получение количества товаров добавленных в корзину
 - **getTotal()** - получение итоговой суммы заказа
 - **clearShoppingCart()** - очистка корзины после завершения заказа
-- **placeToOrder()** - сохранение в заказе товаров из корзины и их общей стоимости
-- **clearOrder()** - очистка полей заказа после его завершения
+- **clearOrder()** - очистка полей форм после завершения заказа
 - **setUserDataField(field: keyof IUserDataForm, value: string)** - сохранение данных из поля ввода
 - **setUserContactsField(field: keyof IUserContactsForm, value: string)** - сохранение данных из поля ввода
 - **validateUserData()** - валидация полей ввода
