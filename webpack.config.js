@@ -1,5 +1,7 @@
 // Generated using webpack-cli https://github.com/webpack/webpack-cli
 
+import {API_TOKEN, API_ORIGIN} from './src/utils/constants'
+
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
@@ -35,11 +37,18 @@ const config = {
 
     // Add your plugins here
     // Learn more about plugins from https://webpack.js.org/configuration/plugins/
+    // new DefinePlugin({
+    //   'process.env.DEVELOPMENT': !isProduction,
+    //   'process.env.API_ORIGIN': JSON.stringify(process.env.API_ORIGIN ?? ''),
+    //   'process.env.API_TOKEN': JSON.stringify(process.env.API_TOKEN ?? '')
+    // })
     new DefinePlugin({
-      'process.env.DEVELOPMENT': !isProduction,
-      'process.env.API_ORIGIN': JSON.stringify(process.env.API_ORIGIN ?? ''),
-      'process.env.API_TOKEN': JSON.stringify(process.env.API_TOKEN ?? '')
-    })
+        'process.env.DEVELOPMENT': !isProduction,
+        'process.env.API_ORIGIN': JSON.stringify(API_ORIGIN ?? ''),
+        'process.env.API_TOKEN': JSON.stringify(API_TOKEN ?? '')
+      })
+
+
   ],
   module: {
     rules: [
