@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
-  "homepage": "https://webbOrista.github.io/web-larek-frontend",
   "devDependencies": {
     "@babel/core": "^7.21.5",
     "@babel/preset-env": "^7.21.5",
