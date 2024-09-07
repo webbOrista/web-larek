@@ -1,6 +1,8 @@
 import { Api, ApiListResponse } from './base/api';
 import {IOrder, IOrderResult, IProduct} from "../types/index";
 
+// const baseUrl = process.env.API_ORIGIN;
+
 
 export interface ICustomApi extends Api  {
 	getProductList: () => Promise<IProduct[]>;
@@ -17,7 +19,7 @@ export class CustomAPI extends Api implements ICustomApi {
     }
 
     getProductList(): Promise<IProduct[]> {
-        return this.get('/product').then((data: ApiListResponse<IProduct>) =>
+        return this.get('https://larek-api.nomoreparties.co/product').then((data: ApiListResponse<IProduct>) =>
             data.items.map((item) => ({
                 ...item,
                 image: this.cdn + item.image
