@@ -63,14 +63,6 @@ npm run build
 
 ```
 
-или
-
-
-```bash
-yarn build
-
-```
-
 ---
 
 **P.S.**
